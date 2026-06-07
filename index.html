@@ -38,12 +38,12 @@
 
                 <div class="hidden lg:block pt-2 border-t border-gray-700 my-1"></div>
 
-                <button onclick="openModal('modal-ingreso')"
+                <button onclick="abrirModalParaCrear('ingreso')"
                     class="flex flex-col lg:flex-row items-center gap-1 lg:gap-3 px-3 py-1.5 lg:py-2 text-xs lg:text-sm text-emerald-400 hover:bg-emerald-950/30 rounded-lg transition-colors flex-1 lg:flex-none">
                     <i data-lucide="plus-circle" class="w-5 h-5"></i>
                     <span class="sidebar-text overflow-hidden whitespace-nowrap">Ingreso</span>
                 </button>
-                <button onclick="openModal('modal-gasto')"
+                <button onclick="abrirModalParaCrear('gasto')"
                     class="flex flex-col lg:flex-row items-center gap-1 lg:gap-3 px-3 py-1.5 lg:py-2 text-xs lg:text-sm text-rose-400 hover:bg-rose-950/30 rounded-lg transition-colors flex-1 lg:flex-none">
                     <i data-lucide="minus-circle" class="w-5 h-5"></i>
                     <span class="sidebar-text overflow-hidden whitespace-nowrap">Gasto</span>
@@ -55,58 +55,45 @@
             class="hidden lg:block p-1 hover:bg-gray-700 rounded text-gray-400 hover:text-white absolute top-4 right-4">
             <i data-lucide="menu"></i>
         </button>
-        <div
-            class="hidden lg:block p-4 border-t border-gray-700 text-xs text-gray-500 sidebar-text overflow-hidden whitespace-nowrap">
+        <div class="hidden lg:block p-4 border-t border-gray-700 text-xs text-gray-500 sidebar-text overflow-hidden whitespace-nowrap">
             © 2026 mi_presupuesto
         </div>
     </aside>
 
     <main class="flex-1 flex flex-col h-full overflow-y-auto bg-gray-900 pb-16 lg:pb-0">
-        <header
-            class="bg-gray-800/50 backdrop-blur border-b border-gray-700 px-4 lg:px-6 py-4 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3 lg:gap-6 sticky top-0 z-10 w-full">
-
+        <header class="bg-gray-800/50 backdrop-blur border-b border-gray-700 px-4 lg:px-6 py-4 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3 lg:gap-6 sticky top-0 z-10 w-full">
             <div class="flex items-center justify-between shrink-0">
-                <h1 id="page-title" class="text-lg lg:text-xl font-bold text-white tracking-tight">Dashboard Financiero
-                </h1>
+                <h1 id="page-title" class="text-lg lg:text-xl font-bold text-white tracking-tight">Dashboard Financiero</h1>
             </div>
 
-            <div
-                class="flex items-center justify-between bg-gray-800 p-2 rounded-xl border border-gray-700 text-xs w-full lg:w-auto gap-2 shrink-0">
+            <div class="flex items-center justify-between bg-gray-800 p-2 rounded-xl border border-gray-700 text-xs w-full lg:w-auto gap-2 shrink-0">
                 <span class="text-gray-400 font-semibold shrink-0">Regla %:</span>
                 <div class="flex items-center gap-1.5 justify-center flex-1 lg:flex-none">
-                    <input type="number" id="pct-necesidades" value="60"
-                        class="w-12 bg-gray-700 border border-gray-600 rounded-lg text-center py-1 font-bold text-emerald-400 focus:outline-none focus:border-emerald-500">
-                    <input type="number" id="pct-deseos" value="30"
-                        class="w-12 bg-gray-700 border border-gray-600 rounded-lg text-center py-1 font-bold text-blue-400 focus:outline-none focus:border-blue-500">
-                    <input type="number" id="pct-ahorro" value="10"
-                        class="w-12 bg-gray-700 border border-gray-600 rounded-lg text-center py-1 font-bold text-purple-400 focus:outline-none focus:border-purple-500">
+                    <input type="number" id="pct-necesidades" value="60" class="w-12 bg-gray-700 border border-gray-600 rounded-lg text-center py-1 font-bold text-emerald-400 focus:outline-none focus:border-emerald-500">
+                    <input type="number" id="pct-deseos" value="30" class="w-12 bg-gray-700 border border-gray-600 rounded-lg text-center py-1 font-bold text-blue-400 focus:outline-none focus:border-blue-500">
+                    <input type="number" id="pct-ahorro" value="10" class="w-12 bg-gray-700 border border-gray-600 rounded-lg text-center py-1 font-bold text-purple-400 focus:outline-none focus:border-purple-500">
                 </div>
-                <button onclick="actualizarPorcentajes()"
-                    class="bg-emerald-600 hover:bg-emerald-500 px-3 py-1 rounded-lg font-bold text-white transition-colors shrink-0">Guardar</button>
+                <button onclick="actualizarPorcentajes()" class="bg-emerald-600 hover:bg-emerald-500 px-3 py-1 rounded-lg font-bold text-white transition-colors shrink-0">Guardar</button>
             </div>
         </header>
 
         <section id="tab-dashboard" class="p-6 space-y-6 content-tab">
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div
-                    class="bg-gray-800 border border-gray-700 rounded-xl p-5 shadow-lg flex items-center justify-between">
+                <div class="bg-gray-800 border border-gray-700 rounded-xl p-5 shadow-lg flex items-center justify-between">
                     <div>
                         <p class="text-gray-400 text-sm font-medium">Ingresos Totales</p>
                         <h3 id="txt-ingresos" class="text-2xl font-bold text-emerald-400 mt-1">$0</h3>
                     </div>
-                    <div class="p-3 bg-emerald-500/10 text-emerald-400 rounded-lg"><i data-lucide="trending-up"></i>
-                    </div>
+                    <div class="p-3 bg-emerald-500/10 text-emerald-400 rounded-lg"><i data-lucide="trending-up"></i></div>
                 </div>
-                <div
-                    class="bg-gray-800 border border-gray-700 rounded-xl p-5 shadow-lg flex items-center justify-between">
+                <div class="bg-gray-800 border border-gray-700 rounded-xl p-5 shadow-lg flex items-center justify-between">
                     <div>
                         <p class="text-gray-400 text-sm font-medium">Gastos / Deudas</p>
                         <h3 id="txt-gastos" class="text-2xl font-bold text-rose-400 mt-1">$0</h3>
                     </div>
                     <div class="p-3 bg-rose-500/10 text-rose-400 rounded-lg"><i data-lucide="trending-down"></i></div>
                 </div>
-                <div
-                    class="bg-gray-800 border border-gray-700 rounded-xl p-5 shadow-lg flex items-center justify-between">
+                <div class="bg-gray-800 border border-gray-700 rounded-xl p-5 shadow-lg flex items-center justify-between">
                     <div>
                         <p class="text-gray-400 text-sm font-medium">Balance Neto</p>
                         <h3 id="txt-balance" class="text-2xl font-bold text-white mt-1">$0</h3>
@@ -115,42 +102,41 @@
                 </div>
             </div>
 
-            <div
-                class="bg-gray-800 border border-gray-700 rounded-xl p-5 shadow-lg flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+            <div class="bg-gray-800 border border-gray-700 rounded-xl p-5 shadow-lg flex flex-col lg:flex-row lg:items-center justify-between gap-4">
                 <div>
                     <h4 class="text-gray-200 font-semibold flex items-center gap-2">
                         <i data-lucide="sliders-horizontal" class="text-emerald-400"></i> Control de Registros Mensuales
                     </h4>
-                    <p class="text-xs text-gray-400 mt-1">Selecciona un mes para filtrar los datos reflejados en el
-                        Dashboard o para descargar el reporte en CSV.</p>
+                    <p class="text-xs text-gray-400 mt-1">Selecciona un mes para filtrar los datos reflejados en el Dashboard o para descargar el reporte en CSV.</p>
                 </div>
 
                 <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full lg:w-auto">
-                    <input type="month" id="export-mes"
-                        class="bg-gray-700 border border-gray-600 rounded-lg p-2.5 text-sm text-white font-medium focus:outline-none focus:border-emerald-500 w-full sm:w-44">
-
-                    <button onclick="filtrarDatosPorMes()"
-                        class="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2.5 rounded-lg text-sm font-bold flex items-center justify-center gap-2 transition-colors w-full sm:w-auto">
+                    <input type="month" id="export-mes" class="bg-gray-700 border border-gray-600 rounded-lg p-2.5 text-sm text-white font-medium focus:outline-none focus:border-emerald-500 w-full sm:w-44">
+                    <button onclick="filtrarDatosPorMes()" class="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2.5 rounded-lg text-sm font-bold flex items-center justify-center gap-2 transition-colors w-full sm:w-auto">
                         <i data-lucide="filter" class="w-4 h-4"></i> Filtrar
                     </button>
-
-                    <button onclick="exportarReporteMensual()"
-                        class="bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2.5 rounded-lg text-sm font-bold flex items-center justify-center gap-2 transition-colors w-full sm:w-auto">
+                    <button onclick="exportarReporteMensual()" class="bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2.5 rounded-lg text-sm font-bold flex items-center justify-center gap-2 transition-colors w-full sm:w-auto">
                         <i data-lucide="file-spreadsheet" class="w-4 h-4"></i> Descargar CSV
                     </button>
                 </div>
             </div>
 
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <div
-                    class="bg-gray-800 border border-gray-700 rounded-xl p-5 shadow-lg flex flex-col items-center justify-center lg:col-span-1">
+                <div class="bg-gray-800 border border-gray-700 rounded-xl p-5 shadow-lg flex flex-col items-center justify-center">
                     <h4 class="text-gray-200 font-semibold mb-4 self-start">Distribución</h4>
-                    <div class="w-full max-w-[200px]"><canvas id="chartPresupuesto"></canvas></div>
+                    <div class="w-full max-w-[170px]"><canvas id="chartPresupuesto"></canvas></div>
                 </div>
-                <div
-                    class="bg-gray-800 border border-gray-700 rounded-xl p-5 shadow-lg lg:col-span-2 flex flex-col justify-between">
+                <div class="bg-gray-800 border border-gray-700 rounded-xl p-5 shadow-lg flex flex-col justify-between">
                     <h4 class="text-gray-200 font-semibold mb-3">Límites Ideales</h4>
                     <div class="space-y-4" id="lista-limites"></div>
+                </div>
+                <div class="bg-gray-800 border border-gray-700 rounded-xl shadow-lg flex flex-col h-[280px]">
+                    <div class="p-4 border-b border-gray-700 flex justify-between items-center shrink-0">
+                        <h4 class="text-gray-200 font-semibold flex items-center gap-2">
+                            <i data-lucide="arrow-up-right" class="text-emerald-400 w-4 h-4"></i> Ingresos del Mes
+                        </h4>
+                    </div>
+                    <div class="overflow-y-auto flex-1 p-2 space-y-2" id="lista-ingresos-mes"></div>
                 </div>
             </div>
 
@@ -166,10 +152,10 @@
                                 <th class="p-4">Tipo</th>
                                 <th class="p-4">Monto</th>
                                 <th class="p-4">Fecha Pago</th>
+                                <th class="p-4 text-right">Acciones</th>
                             </tr>
                         </thead>
-                        <tbody id="tabla-gastos"
-                            class="md:divide-y md:divide-gray-700 text-sm block md:table-row-group"></tbody>
+                        <tbody id="tabla-gastos" class="md:divide-y md:divide-gray-700 text-sm block md:table-row-group"></tbody>
                     </table>
                 </div>
             </div>
@@ -178,34 +164,19 @@
         <section id="tab-viajes" class="p-6 space-y-6 content-tab hidden">
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <div class="bg-gray-800 border border-gray-700 rounded-xl p-5 shadow-lg h-fit">
-                    <h4 class="text-gray-200 font-semibold mb-4 flex items-center gap-2"><i data-lucide="sliders"
-                            class="text-blue-400"></i> Parámetros</h4>
+                    <h4 class="text-gray-200 font-semibold mb-4 flex items-center gap-2"><i data-lucide="sliders" class="text-blue-400"></i> Parámetros</h4>
                     <div class="space-y-4">
-                        <div><label class="block text-xs text-gray-400 mb-1">Destino</label><input type="text"
-                                id="v-destino" value="Vacaciones Familiares" oninput="calcularSimuladorViaje()"
-                                class="w-full bg-gray-700 border border-gray-600 rounded-lg p-2 text-sm text-white">
-                        </div>
+                        <div><label class="block text-xs text-gray-400 mb-1">Destino</label><input type="text" id="v-destino" value="Vacaciones Familiares" oninput="calcularSimuladorViaje()" class="w-full bg-gray-700 border border-gray-600 rounded-lg p-2 text-sm text-white"></div>
                         <div class="grid grid-cols-2 gap-3">
-                            <div><label class="block text-xs text-gray-400 mb-1">Inicio</label><input type="date"
-                                    id="v-inicio" value="2026-06-01" onchange="calcularSimuladorViaje()"
-                                    class="w-full bg-gray-700 border border-gray-600 rounded-lg p-2 text-xs text-white">
-                            </div>
-                            <div><label class="block text-xs text-gray-400 mb-1">Fin</label><input type="date"
-                                    id="v-fin" value="2026-12-01" onchange="calcularSimuladorViaje()"
-                                    class="w-full bg-gray-700 border border-gray-600 rounded-lg p-2 text-xs text-white">
-                            </div>
+                            <div><label class="block text-xs text-gray-400 mb-1">Inicio</label><input type="date" id="v-inicio" value="2026-06-01" onchange="calcularSimuladorViaje()" class="w-full bg-gray-700 border border-gray-600 rounded-lg p-2 text-xs text-white"></div>
+                            <div><label class="block text-xs text-gray-400 mb-1">Fin</label><input type="date" id="v-fin" value="2026-12-01" onchange="calcularSimuladorViaje()" class="w-full bg-gray-700 border border-gray-600 rounded-lg p-2 text-xs text-white"></div>
                         </div>
-                        <div><label class="block text-xs text-gray-400 mb-1">Porcentaje</label><input type="number"
-                                id="v-porcentaje" value="5" oninput="calcularSimuladorViaje()"
-                                class="w-20 bg-gray-700 border border-gray-600 rounded-lg p-2 text-sm text-white text-center">
-                        </div>
+                        <div><label class="block text-xs text-gray-400 mb-1">Porcentaje</label><input type="number" id="v-porcentaje" value="5" oninput="calcularSimuladorViaje()" class="w-20 bg-gray-700 border border-gray-600 rounded-lg p-2 text-sm text-white text-center"></div>
                     </div>
                 </div>
-                <div
-                    class="bg-gray-800 border border-gray-700 rounded-xl p-6 shadow-lg lg:col-span-2 flex flex-col justify-between">
+                <div class="bg-gray-800 border border-gray-700 rounded-xl p-6 shadow-lg lg:col-span-2 flex flex-col justify-between">
                     <div>
-                        <span
-                            class="bg-blue-500/10 text-blue-400 text-xs px-2.5 py-1 rounded-full font-semibold uppercase">Proyección</span>
+                        <span class="bg-blue-500/10 text-blue-400 text-xs px-2.5 py-1 rounded-full font-semibold uppercase">Proyección</span>
                         <h3 id="res-destino" class="text-2xl font-bold text-white mt-3">Vacaciones Familiares</h3>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
                             <div class="bg-gray-700/40 p-4 rounded-xl border border-gray-700">
@@ -227,51 +198,39 @@
         </section>
     </main>
 
-    <div id="modal-ingreso"
-        class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center hidden opacity-0 transition-opacity duration-200">
+    <div id="modal-ingreso" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center hidden opacity-0 transition-opacity duration-200">
         <div class="bg-gray-800 border border-gray-700 rounded-xl w-full max-w-md p-6">
-            <h3 class="text-lg font-bold text-white mb-4">Registrar Ingreso</h3>
+            <h3 id="modal-ingreso-titulo" class="text-lg font-bold text-white mb-4">Registrar Ingreso</h3>
+            <input type="hidden" id="in-id-editar" value="">
             <div class="space-y-4">
-                <input type="text" id="in-fuente" placeholder="Fuente (Ej: Yo, Esposa)"
-                    class="w-full bg-gray-700 border border-gray-600 rounded-lg p-2 text-sm text-white">
-                <input type="number" id="in-monto" placeholder="Monto ($)"
-                    class="w-full bg-gray-700 border border-gray-600 rounded-lg p-2 text-sm text-white">
-                <input type="date" id="in-fecha"
-                    class="w-full bg-gray-700 border border-gray-600 rounded-lg p-2 text-sm text-white">
+                <input type="text" id="in-fuente" placeholder="Fuente (Ej: Yo, Esposa)" class="w-full bg-gray-700 border border-gray-600 rounded-lg p-2 text-sm text-white">
+                <input type="number" id="in-monto" placeholder="Monto ($)" class="w-full bg-gray-700 border border-gray-600 rounded-lg p-2 text-sm text-white">
+                <input type="date" id="in-fecha" class="w-full bg-gray-700 border border-gray-600 rounded-lg p-2 text-sm text-white">
                 <div class="flex gap-3">
-                    <button onclick="closeModal('modal-ingreso')"
-                        class="flex-1 bg-gray-700 text-gray-300 py-2 rounded-lg">Cancelar</button>
-                    <button onclick="guardarIngreso()"
-                        class="flex-1 bg-emerald-600 text-white py-2 rounded-lg font-semibold">Guardar</button>
+                    <button onclick="closeModal('modal-ingreso')" class="flex-1 bg-gray-700 text-gray-300 py-2 rounded-lg">Cancelar</button>
+                    <button onclick="guardarIngreso()" class="flex-1 bg-emerald-600 text-white py-2 rounded-lg font-semibold">Guardar</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <div id="modal-gasto"
-        class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center hidden opacity-0 transition-opacity duration-200">
+    <div id="modal-gasto" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center hidden opacity-0 transition-opacity duration-200">
         <div class="bg-gray-800 border border-gray-700 rounded-xl w-full max-w-md p-6">
-            <h3 class="text-lg font-bold text-white mb-4">Registrar Gasto / Deuda</h3>
+            <h3 id="modal-gasto-titulo" class="text-lg font-bold text-white mb-4">Registrar Gasto / Deuda</h3>
+            <input type="hidden" id="ex-id-editar" value="">
             <div class="space-y-4">
-                <input type="text" id="ex-nombre" placeholder="Descripción del Gasto"
-                    class="w-full bg-gray-700 border border-gray-600 rounded-lg p-2 text-sm text-white">
+                <input type="text" id="ex-nombre" placeholder="Descripción del Gasto" class="w-full bg-gray-700 border border-gray-600 rounded-lg p-2 text-sm text-white">
                 <div class="grid grid-cols-2 gap-3">
-                    <input type="number" id="ex-monto" placeholder="Monto ($)"
-                        class="w-full bg-gray-700 border border-gray-600 rounded-lg p-2 text-sm text-white">
-                    <input type="date" id="ex-fecha"
-                        class="w-full bg-gray-700 border border-gray-600 rounded-lg p-2 text-xs text-white">
+                    <input type="number" id="ex-monto" placeholder="Monto ($)" class="w-full bg-gray-700 border border-gray-600 rounded-lg p-2 text-sm text-white">
+                    <input type="date" id="ex-fecha" class="w-full bg-gray-700 border border-gray-600 rounded-lg p-2 text-xs text-white">
                 </div>
                 <div class="flex gap-2">
-                    <select id="ex-tipo"
-                        class="flex-1 bg-gray-700 border border-gray-600 rounded-lg p-2 text-sm text-white"></select>
-                    <button onclick="agregarNuevaCategoria()"
-                        class="bg-gray-700 border border-gray-600 px-3 rounded-lg text-xs font-semibold text-white">+</button>
+                    <select id="ex-tipo" class="flex-1 bg-gray-700 border border-gray-600 rounded-lg p-2 text-sm text-white"></select>
+                    <button onclick="agregarNuevaCategoria()" class="bg-gray-700 border border-gray-600 px-3 rounded-lg text-xs font-semibold text-white">+</button>
                 </div>
                 <div class="flex gap-3">
-                    <button onclick="closeModal('modal-gasto')"
-                        class="flex-1 bg-gray-700 text-gray-300 py-2 rounded-lg">Cancelar</button>
-                    <button onclick="guardarGasto()"
-                        class="flex-1 bg-rose-600 text-white py-2 rounded-lg font-semibold">Guardar</button>
+                    <button onclick="closeModal('modal-gasto')" class="flex-1 bg-gray-700 text-gray-300 py-2 rounded-lg">Cancelar</button>
+                    <button onclick="guardarGasto()" class="flex-1 bg-rose-600 text-white py-2 rounded-lg font-semibold">Guardar</button>
                 </div>
             </div>
         </div>
@@ -288,9 +247,9 @@
 
         lucide.createIcons();
 
-        // Inicializar selectores de fecha con el tiempo actual (Año 2026)
+        // Inicializar selectores de fecha con el tiempo actual
         const deHoy = new Date();
-        document.getElementById('in-fecha').value = deHoy.toISOString().split('T')[0];
+        const fechaFormatoHoy = deHoy.toISOString().split('T')[0];
 
         window.onload = async function () {
             // Cargar primero categorías para los formularios
@@ -309,35 +268,99 @@
                 document.getElementById('pct-ahorro').value = dataRegla.ahorro;
             }
 
+            // Establecer Junio de 2026 por defecto en el control de meses si está libre
+            const inputMes = document.getElementById('export-mes');
+            if (inputMes && !inputMes.value) {
+                inputMes.value = "2026-06"; 
+            }
+
             // Ejecutar el filtrado inicial del mes en curso automáticamente
             await filtrarDatosPorMes();
-            calcularSimuladorViaje();
         };
 
-        // --- CONECTIVIDAD SUPABASE (INSERTS) ---
+        // --- MANEJO EXCLUSIVO PARA LIMPIAR AL CREAR NUEVOS ---
+        function abrirModalParaCrear(tipo) {
+            if (tipo === 'ingreso') {
+                document.getElementById('modal-ingreso-titulo').textContent = "Registrar Ingreso";
+                document.getElementById('in-id-editar').value = ""; // Vaciado estricto del ID
+                document.getElementById('in-fuente').value = "";
+                document.getElementById('in-monto').value = "";
+                document.getElementById('in-fecha').value = fechaFormatoHoy;
+                openModal('modal-ingreso');
+            } else if (tipo === 'gasto') {
+                document.getElementById('modal-gasto-titulo').textContent = "Registrar Gasto / Deuda";
+                document.getElementById('ex-id-editar').value = ""; // Vaciado estricto del ID
+                document.getElementById('ex-nombre').value = "";
+                document.getElementById('ex-monto').value = "";
+                document.getElementById('ex-fecha').value = fechaFormatoHoy;
+                openModal('modal-gasto');
+            }
+        }
+
+        // --- CONECTIVIDAD SUPABASE (INSERTS / UPDATES UNIFICADOS) ---
         async function guardarIngreso() {
+            const idEditar = document.getElementById('in-id-editar').value;
             const fuente = document.getElementById('in-fuente').value;
             const monto = parseFloat(document.getElementById('in-monto').value);
             const fecha = document.getElementById('in-fecha').value;
 
-            if (!fuente || !monto) return alert("Completa los campos.");
+            if (!fuente || isNaN(monto) || !fecha) return alert("Completa todos los campos.");
 
-            await _supabase.from('ingresos').insert([{ fuente, monto, fecha }]);
-            closeModal('modal-ingreso');
-            await filtrarDatosPorMes();
+            try {
+                if (idEditar && idEditar.trim() !== "") {
+                    // MODO EDICIÓN RE REAL
+                    const { error } = await _supabase
+                        .from('ingresos')
+                        .update({ fuente, monto, fecha })
+                        .eq('id', idEditar);
+                    if (error) throw error;
+                } else {
+                    // MODO NUEVO REGISTRO
+                    const { error } = await _supabase
+                        .from('ingresos')
+                        .insert([{ fuente, monto, fecha }]);
+                    if (error) throw error;
+                }
+
+                closeModal('modal-ingreso');
+                await filtrarDatosPorMes();
+            } catch (err) {
+                console.error(err.message);
+                alert("Error al salvar el ingreso.");
+            }
         }
 
         async function guardarGasto() {
+            const idEditar = document.getElementById('ex-id-editar').value;
             const nombre = document.getElementById('ex-nombre').value;
             const monto = parseFloat(document.getElementById('ex-monto').value);
             const fecha_pago = document.getElementById('ex-fecha').value;
             const tipo_deuda_id = document.getElementById('ex-tipo').value;
 
-            if (!nombre || !monto || !fecha_pago) return alert("Completa los campos.");
+            if (!nombre || isNaN(monto) || !fecha_pago || !tipo_deuda_id) return alert("Completa todos los campos.");
 
-            await _supabase.from('gastos_deudas').insert([{ nombre, monto, fecha_pago, tipo_deuda_id }]);
-            closeModal('modal-gasto');
-            await filtrarDatosPorMes();
+            try {
+                if (idEditar && idEditar.trim() !== "") {
+                    // MODO EDICIÓN REAL
+                    const { error } = await _supabase
+                        .from('gastos_deudas')
+                        .update({ nombre, monto, fecha_pago, tipo_deuda_id })
+                        .eq('id', idEditar);
+                    if (error) throw error;
+                } else {
+                    // MODO NUEVO REGISTRO
+                    const { error } = await _supabase
+                        .from('gastos_deudas')
+                        .insert([{ nombre, monto, fecha_pago, tipo_deuda_id }]);
+                    if (error) throw error;
+                }
+
+                closeModal('modal-gasto');
+                await filtrarDatosPorMes();
+            } catch (err) {
+                console.error(err.message);
+                alert("Error al salvar el gasto.");
+            }
         }
 
         async function agregarNuevaCategoria() {
@@ -360,22 +383,17 @@
             alert("Regla de porcentajes actualizada.");
         }
 
-        // --- FUNCIÓN DE FILTRADO COMPLETA Y FILTRADA POR ID ESTRICTO ---
+        // --- FILTRADO MENSUAL ---
         async function filtrarDatosPorMes() {
-            const mesSeleccionado = document.getElementById('export-mes').value; // Retorna "YYYY-MM"
-
-            if (!mesSeleccionado) {
-                alert("Por favor, selecciona un mes y año para aplicar el filtro.");
-                return;
-            }
+            const mesSeleccionado = document.getElementById('export-mes').value;
+            if (!mesSeleccionado) return alert("Selecciona un mes y año.");
 
             const [year, month] = mesSeleccionado.split('-');
             const primerDia = `${year}-${month}-01`;
-            const ultimoDia = new Date(year, month, 0).getDate();
+            const ultimoDia = new Date(year, month, 0).getDate(); 
             const fechaFin = `${year}-${month}-${ultimoDia}`;
 
             try {
-                // 1. Consultar únicamente el rango mensual en Supabase
                 const { data: ingresos, error: errIngresos } = await _supabase
                     .from('ingresos')
                     .select('*')
@@ -392,48 +410,32 @@
 
                 if (errGastos) throw errGastos;
 
-                // 2. Limpieza estricta de acumulados previos
                 ingresosTotales = ingresos ? ingresos.reduce((sum, i) => sum + Number(i.monto || 0), 0) : 0;
                 gastosTotales = gastos ? gastos.reduce((sum, g) => sum + Number(g.monto || 0), 0) : 0;
 
-                // 3. Renderizado unificado del Dashboard
                 renderDashboard();
                 renderTablaGastos(gastos || []);
+                renderMiniTablaIngresos(ingresos || []);
                 calcularSimuladorViaje();
-
-                console.log(`Filtro exitoso aplicado para el periodo: ${mesSeleccionado}`);
+                lucide.createIcons();
 
             } catch (error) {
-                console.error("Error al procesar el filtro mensual:", error.message);
-                alert("Ocurrió un error al traer los datos filtrados.");
+                console.error(error.message);
+                alert("Error al traer los datos filtrados.");
             }
         }
 
-        // --- INTERCEPCIÓN EN DOM LOADED PARA CONTROLAR EL INICIO EN JUNIO ---
-        document.addEventListener('DOMContentLoaded', () => {
-            const inputMes = document.getElementById('export-mes');
-            if (inputMes && !inputMes.value) {
-                const hoy = new Date();
-                const anio = hoy.getFullYear();
-                const mes = String(hoy.getMonth() + 1).padStart(2, '0');
-                inputMes.value = `${anio}-${mes}`; // "2026-06" por defecto
-            }
-        });
-
-        // --- FUNCIÓN DE EXPORTACIÓN REPARADA PARA EXCEL NATIVO ---
+        // --- REPORTES (EXCEL COMPATIBLE) ---
         async function exportarReporteMensual() {
             const mesSeleccionado = document.getElementById('export-mes').value;
             if (!mesSeleccionado) return alert("Por favor, selecciona un mes válido.");
 
             const [anho, mes] = mesSeleccionado.split('-');
             const fechaInicio = `${anho}-${mes}-01`;
-            
-            // Último día dinámico del mes
             const ultimoDia = new Date(anho, mes, 0).getDate();
             const fechaFin = `${anho}-${mes}-${ultimoDia}`;
 
             try {
-                // 1. Consultas a Supabase
                 const { data: ingresosMes, error: errIn } = await _supabase
                     .from('ingresos')
                     .select('*')
@@ -448,31 +450,25 @@
 
                 if (errIn || errGa) throw (errIn || errGa);
 
-                // 2. Cálculos seguros de totales
                 const totalIn = Array.isArray(ingresosMes) ? ingresosMes.reduce((sum, i) => sum + Number(i.monto || 0), 0) : 0;
                 const totalGa = Array.isArray(gastosMes) ? gastosMes.reduce((sum, g) => sum + Number(g.monto || 0), 0) : 0;
                 const balanceNeto = totalIn - totalGa;
 
-                // 3. CONSTRUCCIÓN CORREGIDA DEL CSV (Instrucción sep pegada al inicio)
-                let csvContent = "\uFEFFsep=;\n"; // <-- FIX: \uFEFF y sep=; van juntos en la primerísima línea
+                let csvContent = "\uFEFFsep=;\n";
                 csvContent += `REPORTE FINANCIERO MENSUAL - PERÍODO: ${mesSeleccionado}\n`;
                 csvContent += `Ingresos Totales del Mes;${totalIn}\n`;
                 csvContent += `Gastos/Deudas Totales del Mes;${totalGa}\n`;
                 csvContent += `Balance Neto;${balanceNeto}\n\n`;
 
-                // --- SECCIÓN DE INGRESOS ---
                 csvContent += "--- SECCIÓN DE INGRESOS ---\n";
                 csvContent += "Fuente;Monto;Fecha\n";
                 if (Array.isArray(ingresosMes) && ingresosMes.length > 0) {
-                    ingresosMes.forEach(i => {
-                        csvContent += `${i.fuente || 'S/N'};${i.monto || 0};${i.fecha || ''}\n`;
-                    });
+                    ingresosMes.forEach(i => { csvContent += `${i.fuente || 'S/N'};${i.monto || 0};${i.fecha || ''}\n`; });
                 } else {
                     csvContent += "Sin ingresos registrados en este mes;;\n";
                 }
                 csvContent += "\n";
 
-                // --- SECCIÓN DE GASTOS Y DEUDAS ---
                 csvContent += "--- SECCIÓN DE GASTOS Y DEUDAS ---\n";
                 csvContent += "Descripción;Categoría;Monto;Fecha de Pago\n";
                 if (Array.isArray(gastosMes) && gastosMes.length > 0) {
@@ -484,7 +480,6 @@
                     csvContent += "Sin gastos o deudas registrados en este mes;;;\n";
                 }
 
-                // 4. Creación del archivo y descarga automática
                 const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
                 const url = URL.createObjectURL(blob);
                 const link = document.createElement("a");
@@ -495,11 +490,9 @@
                 link.click();
                 document.body.removeChild(link);
 
-                console.log("CSV generado y estructurado para Excel con éxito.");
-
             } catch (error) {
-                console.error("Error al generar el CSV:", error.message);
-                alert("Hubo un error al consultar u organizar los datos para el reporte.");
+                console.error(error.message);
+                alert("Hubo un error al generar el CSV.");
             }
         }
 
@@ -507,19 +500,13 @@
         function formatMoney(amount) { return '$' + amount.toLocaleString('es-CO'); }
 
         function renderDashboard() {
-            // Selección por IDs exclusivos mapeados exactamente en tu HTML
             document.getElementById('txt-ingresos').textContent = formatMoney(ingresosTotales);
             document.getElementById('txt-gastos').textContent = formatMoney(gastosTotales);
-
+            
             const balance = ingresosTotales - gastosTotales;
             const txtBalance = document.getElementById('txt-balance');
             txtBalance.textContent = formatMoney(balance);
-
-            if (balance < 0) {
-                txtBalance.className = "text-2xl font-bold text-rose-400 mt-1";
-            } else {
-                txtBalance.className = "text-2xl font-bold text-white mt-1";
-            }
+            txtBalance.className = balance < 0 ? "text-2xl font-bold text-rose-400 mt-1" : "text-2xl font-bold text-white mt-1";
 
             const valNec = (ingresosTotales * reglaPorcentajes.necesidades) / 100;
             const valDes = (ingresosTotales * reglaPorcentajes.deseos) / 100;
@@ -540,23 +527,55 @@
             });
         }
 
-        // --- RENDERS UI (TABLA TOTALMENTE ADAPTABLE PARA MÓVIL Y COMPUTADORAS) ---
+        // --- RENDERS DE LAS TABLAS CON CAPTURA TOTAL DE EDICIÓN ---
+        function renderMiniTablaIngresos(lista) {
+            const contenedor = document.getElementById('lista-ingresos-mes');
+            if (!contenedor) return;
+
+            if (lista.length === 0) {
+                contenedor.innerHTML = '<p class="text-xs text-center text-gray-500 py-8">Sin ingresos registrados este mes.</p>';
+                return;
+            }
+
+            contenedor.innerHTML = lista.map(i => `
+                <div class="bg-gray-700/30 border border-gray-700/60 rounded-lg p-2.5 flex items-center justify-between gap-2 hover:bg-gray-700/50 transition-colors">
+                    <div class="min-w-0 flex-1">
+                        <p class="text-sm font-bold text-white truncate">${i.fuente}</p>
+                        <p class="text-[10px] text-gray-400">${i.fecha}</p>
+                    </div>
+                    <div class="flex items-center gap-2.5 shrink-0">
+                        <span class="text-emerald-400 font-bold text-sm">${formatMoney(i.monto)}</span>
+                        <div class="flex gap-1">
+                            <button onclick="prepararEdicionIngreso('${i.id}', '${i.fuente}', ${i.monto}, '${i.fecha}')" class="p-1 hover:bg-gray-600 rounded text-blue-400 transition-colors"><i data-lucide="edit-2" class="w-3.5 h-3.5"></i></button>
+                            <button onclick="eliminarRegistro('ingresos', '${i.id}')" class="p-1 hover:bg-gray-600 rounded text-rose-400 transition-colors"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
         function renderTablaGastos(lista) {
             const tbody = document.getElementById('tabla-gastos');
 
             if (lista.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="4" class="p-4 text-center text-gray-500">Sin deudas registradas en este periodo.</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="5" class="p-4 text-center text-gray-500">Sin deudas registradas en este periodo.</td></tr>';
                 return;
             }
 
             tbody.innerHTML = lista.map(g => {
                 const categoria = g.tipos_deuda?.nombre || 'S/N';
                 return `
-                    <tr class="hidden md:table-row">
+                    <tr class="hidden md:table-row hover:bg-gray-700/30 transition-colors">
                         <td class="p-4 font-medium text-white">${g.nombre}</td>
                         <td class="p-4">${categoria}</td>
                         <td class="p-4 text-rose-400 font-semibold">${formatMoney(g.monto)}</td>
                         <td class="p-4 text-gray-400">${g.fecha_pago}</td>
+                        <td class="p-4 text-right">
+                            <div class="flex items-center justify-end gap-2">
+                                <button onclick="prepararEdicionGasto('${g.id}', '${g.nombre}', ${g.monto}, '${g.fecha_pago}', '${g.tipo_deuda_id || ''}')" class="p-1 hover:bg-gray-600 rounded text-blue-400 transition-colors" title="Editar"><i data-lucide="edit-2" class="w-4 h-4"></i></button>
+                                <button onclick="eliminarRegistro('gastos_deudas', '${g.id}')" class="p-1 hover:bg-gray-600 rounded text-rose-400 transition-colors" title="Eliminar"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                            </div>
+                        </td>
                     </tr>
                     
                     <tr class="block md:hidden border-b border-gray-700/60 p-4 w-full">
@@ -566,15 +585,54 @@
                                     <p class="font-bold text-white text-base tracking-wide">${g.nombre}</p>
                                     <span class="inline-block bg-gray-700/80 text-gray-300 text-[10px] font-semibold px-2 py-0.5 rounded-md uppercase tracking-wider">${categoria}</span>
                                 </div>
-                                <div class="text-right shrink-0">
-                                    <p class="text-rose-400 font-black text-base">${formatMoney(g.monto)}</p>
-                                    <p class="text-gray-400 text-xs mt-0.5">${g.fecha_pago}</p>
+                                <div class="text-right shrink-0 flex items-center gap-3">
+                                    <div>
+                                        <p class="text-rose-400 font-black text-base">${formatMoney(g.monto)}</p>
+                                        <p class="text-gray-400 text-xs mt-0.5">${g.fecha_pago}</p>
+                                    </div>
+                                    <div class="flex flex-col gap-1.5">
+                                        <button onclick="prepararEdicionGasto('${g.id}', '${g.nombre}', ${g.monto}, '${g.fecha_pago}', '${g.tipo_deuda_id || ''}')" class="p-1.5 bg-gray-700 rounded text-blue-400"><i data-lucide="edit-2" class="w-3.5 h-3.5"></i></button>
+                                        <button onclick="eliminarRegistro('gastos_deudas', '${g.id}')" class="p-1.5 bg-gray-700 rounded text-rose-400"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
+                                    </div>
                                 </div>
                             </div>
                         </td>
                     </tr>
                 `;
             }).join('');
+        }
+
+        // --- PREPARACIÓN DE EDICIONES CON MODAL HÍBRIDO ---
+        function prepararEdicionIngreso(id, fuente, monto, fecha) {
+            document.getElementById('modal-ingreso-titulo').textContent = "Editar Ingreso";
+            document.getElementById('in-id-editar').value = id;
+            document.getElementById('in-fuente').value = fuente;
+            document.getElementById('in-monto').value = monto;
+            document.getElementById('in-fecha').value = fecha;
+            openModal('modal-ingreso');
+        }
+
+        function prepararEdicionGasto(id, nombre, monto, fecha_pago, tipo_deuda_id) {
+            document.getElementById('modal-gasto-titulo').textContent = "Editar Gasto / Deuda";
+            document.getElementById('ex-id-editar').value = id;
+            document.getElementById('ex-nombre').value = nombre;
+            document.getElementById('ex-monto').value = monto;
+            document.getElementById('ex-fecha').value = fecha_pago;
+            document.getElementById('ex-tipo').value = tipo_deuda_id || "";
+            openModal('modal-gasto');
+        }
+
+        // --- ELIMINACIÓN ---
+        async function eliminarRegistro(tabla, id) {
+            if (!confirm("¿Estás seguro de eliminar este registro?")) return;
+            try {
+                const { error } = await _supabase.from(tabla).delete().eq('id', id);
+                if (error) throw error;
+                await filtrarDatosPorMes();
+            } catch (err) {
+                console.error(err.message);
+                alert("No se pudo eliminar.");
+            }
         }
 
         function calcularSimuladorViaje() {
@@ -593,7 +651,7 @@
             document.getElementById('res-total').textContent = formatMoney(cuota * meses);
         }
 
-        // --- MANEJO DE SIDEBAR Y INTERFAZ MODAL ---
+        // --- INTERFAZ BASE NATIVA ---
         document.getElementById('btn-toggle').addEventListener('click', () => {
             const sb = document.getElementById('sidebar');
             const sbTitle = document.getElementById('sidebar-title');
