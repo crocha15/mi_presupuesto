@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mi Presupuesto - Dashboard Conectado</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Iconos Lucide -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Supabase CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body class="bg-gray-900 text-gray-100 font-sans flex h-screen overflow-hidden">
+
+    <!-- SIDEBAR DESPLEGABLE -->
+    <aside id="sidebar" class="bg-gray-800 h-full transition-all duration-300 w-64 flex flex-col justify-between border-r border-gray-700 z-20">
+        <div>
+            <div class="p-4 flex items-center justify-between border-b border-gray-700">
+                <div id="sidebar-title" class="flex items-center gap-2 font-bold text-xl text-emerald-400 overflow-hidden whitespace-nowrap">
+                    <i data-lucide="wallet"></i>
+                    <span>mi_presupuesto</span>
+                </div>
+                <button id="btn-toggle" class="p-1 hover:bg-gray-700 rounded text-gray-400 hover:text-white">
+                    <i data-lucide="menu"></i>
+                </button>
+            </div>
+            <nav class="p-3 space-y-2">
+                <button onclick="switchTab('tab-dashboard')" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg bg-gray-700 text-emerald-400 font-medium transition-colors">
+                    <i data-lucide="layout-dashboard"></i>
+                    <span class="sidebar-text overflow-hidden whitespace-nowrap">Dashboard</span>
+                </button>
+                <button onclick="switchTab('tab-viajes')" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-400 hover:bg-gray-700 hover:text-white transition-colors">
+                    <i data-lucide="plane"></i>
+                    <span class="sidebar-text overflow-hidden whitespace-nowrap">Viaje Programado</span>
+                </button>
+                <div class="pt-4 border-t border-gray-700 my-2"></div>
+                <button onclick="openModal('modal-ingreso')" class="w-full flex items-center gap-3 px-3 py-2 text-sm text-emerald-400 hover:bg-emerald-950/30 rounded-lg transition-colors">
+                    <i data-lucide="plus-circle"></i>
+                    <span class="sidebar-text overflow-hidden whitespace-nowrap">(+) Agregar Ingreso</span>
+                </button>
+                <button onclick="openModal('modal-gasto')" class="w-full flex items-center gap-3 px-3 py-2 text-sm text-rose-400 hover:bg-rose-950/30 rounded-lg transition-colors">
+                    <i data-lucide="minus-circle"></i>
+                    <span class="sidebar-text overflow-hidden whitespace-nowrap">(-) Agregar Gasto</span>
+                </button>
+            </nav>
+        </div>
+        <div class="p-4 border-t border-gray-700 text-xs text-gray-500 sidebar-text overflow-hidden whitespace-nowrap">
+            © 2026 mi_presupuesto
+        </div>
+    </aside>
+
+    <!-- CONTENEDOR PRINCIPAL -->
+    <main class="flex-1 flex flex-col h-full overflow-y-auto bg-gray-900">
+        <header class="bg-gray-800/50 backdrop-blur border-b border-gray-700 px-6 py-4 flex justify-between items-center sticky top-0 z-10">
+            <h1 id="page-title" class="text-xl font-bold text-white">Dashboard Financiero</h1>
+            <div class="flex items-center gap-2 bg-gray-800 p-1.5 rounded-lg border border-gray-700 text-xs">
+                <span class="text-gray-400 px-1 font-medium">Editar Regla %:</span>
+                <input type="number" id="pct-necesidades" value="60" class="w-10 bg-gray-700 border border-gray-600 rounded text-center py-0.5 font-bold text-emerald-400">
+                <input type="number" id="pct-deseos" value="30" class="w-10 bg-gray-700 border border-gray-600 rounded text-center py-0.5 font-bold text-blue-400">
+                <input type="number" id="pct-ahorro" value="10" class="w-10 bg-gray-700 border border-gray-600 rounded text-center py-0.5 font-bold text-purple-400">
+                <button onclick="actualizarPorcentajes()" class="bg-emerald-600 hover:bg-emerald-500 px-2 py-0.5 rounded font-semibold text-white transition-colors">Guardar</button>
+            </div>
+        </header>
+
+        <!-- DASHBOARD TAB -->
+        <section id="tab-dashboard" class="p-6 space-y-6 content-tab">
+            <!-- TARJETAS DE TOTALES -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="bg-gray-800 border border-gray-700 rounded-xl p-5 shadow-lg flex items-center justify-between">
+                    <div><p class="text-gray-400 text-sm font-medium">Ingresos Totales</p><h3 id="txt-ingresos" class="text-2xl font-bold text-emerald-400 mt-1">$0</h3></div>
+                    <div class="p-3 bg-emerald-500/10 text-emerald-400 rounded-lg"><i data-lucide="trending-up"></i></div>
+                </div>
+                <div class="bg-gray-800 border border-gray-700 rounded-xl p-5 shadow-lg flex items-center justify-between">
+                    <div><p class="text-gray-400 text-sm font-medium">Gastos / Deudas</p><h3 id="txt-gastos" class="text-2xl font-bold text-rose-400 mt-1">$0</h3></div>
+                    <div class="p-3 bg-rose-500/10 text-rose-400 rounded-lg"><i data-lucide="trending-down"></i></div>
+                </div>
+                <div class="bg-gray-800 border border-gray-700 rounded-xl p-5 shadow-lg flex items-center justify-between">
+                    <div><p class="text-gray-400 text-sm font-medium">Balance Neto</p><h3 id="txt-balance" class="text-2xl font-bold text-white mt-1">$0</h3></div>
+                    <div class="p-3 bg-blue-500/10 text-blue-400 rounded-lg"><i data-lucide="scale"></i></div>
+                </div>
+            </div>
+
+            <!-- PANEL DE EXPORTACIÓN POR FECHA -->
+            <div class="bg-gray-800 border border-gray-700 rounded-xl p-5 shadow-lg flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div>
+                    <h4 class="text-gray-200 font-semibold flex items-center gap-2">
+                        <i data-lucide="download" class="text-emerald-400"></i> Exportar Reporte Mensual
+                    </h4>
+                    <p class="text-xs text-gray-400 mt-1">Selecciona el mes y año para descargar el desglose de ingresos, deudas y balance en formato CSV.</p>
+                </div>
+                <div class="flex items-center gap-3 self-end sm:self-auto">
+                    <input type="month" id="export-mes" class="bg-gray-700 border border-gray-600 rounded-lg p-2 text-sm text-white font-medium focus:outline-none focus:border-emerald-500">
+                    <button onclick="exportarReporteMensual()" class="bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-2 transition-colors">
+                        <i data-lucide="file-spreadsheet"></i> Descargar CSV
+                    </button>
+                </div>
+            </div>
+
+            <!-- DISTRIBUCIÓN Y LÍMITES IDEALES -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div class="bg-gray-800 border border-gray-700 rounded-xl p-5 shadow-lg flex flex-col items-center justify-center lg:col-span-1">
+                    <h4 class="text-gray-200 font-semibold mb-4 self-start">Distribución</h4>
+                    <div class="w-full max-w-[200px]"><canvas id="chartPresupuesto"></canvas></div>
+                </div>
+                <div class="bg-gray-800 border border-gray-700 rounded-xl p-5 shadow-lg lg:col-span-2 flex flex-col justify-between">
+                    <h4 class="text-gray-200 font-semibold mb-3">Límites Ideales</h4>
+                    <div class="space-y-4" id="lista-limites"></div>
+                </div>
+            </div>
+
+            <!-- TABLA DE HISTORIAL -->
+            <div class="bg-gray-800 border border-gray-700 rounded-xl shadow-lg overflow-hidden">
+                <div class="p-5 border-b border-gray-700"><h4 class="text-gray-200 font-semibold">Historial de Gastos desde mi_presupuesto</h4></div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left">
+                        <thead>
+                            <tr class="bg-gray-700/50 text-gray-400 text-xs uppercase tracking-wider">
+                                <th class="p-4">Descripción</th><th class="p-4">Tipo</th><th class="p-4">Monto</th><th class="p-4">Fecha Pago</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabla-gastos" class="divide-y divide-gray-700 text-sm"></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- VIAJES TAB -->
+        <section id="tab-viajes" class="p-6 space-y-6 content-tab hidden">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div class="bg-gray-800 border border-gray-700 rounded-xl p-5 shadow-lg h-fit">
+                    <h4 class="text-gray-200 font-semibold mb-4 flex items-center gap-2"><i data-lucide="sliders" class="text-blue-400"></i> Parámetros</h4>
+                    <div class="space-y-4">
+                        <div><label class="block text-xs text-gray-400 mb-1">Destino</label><input type="text" id="v-destino" value="Vacaciones Familiares" oninput="calcularSimuladorViaje()" class="w-full bg-gray-700 border border-gray-600 rounded-lg p-2 text-sm text-white"></div>
+                        <div class="grid grid-cols-2 gap-3">
+                            <div><label class="block text-xs text-gray-400 mb-1">Inicio</label><input type="date" id="v-inicio" value="2026-06-01" onchange="calcularSimuladorViaje()" class="w-full bg-gray-700 border border-gray-600 rounded-lg p-2 text-xs text-white"></div>
+                            <div><label class="block text-xs text-gray-400 mb-1">Fin</label><input type="date" id="v-fin" value="2026-12-01" onchange="calcularSimuladorViaje()" class="w-full bg-gray-700 border border-gray-600 rounded-lg p-2 text-xs text-white"></div>
+                        </div>
+                        <div><label class="block text-xs text-gray-400 mb-1">Porcentaje</label><input type="number" id="v-porcentaje" value="5" oninput="calcularSimuladorViaje()" class="w-20 bg-gray-700 border border-gray-600 rounded-lg p-2 text-sm text-white text-center"></div>
+                    </div>
+                </div>
+                <div class="bg-gray-800 border border-gray-700 rounded-xl p-6 shadow-lg lg:col-span-2 flex flex-col justify-between">
+                    <div>
+                        <span class="bg-blue-500/10 text-blue-400 text-xs px-2.5 py-1 rounded-full font-semibold uppercase">Proyección</span>
+                        <h3 id="res-destino" class="text-2xl font-bold text-white mt-3">Vacaciones Familiares</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
+                            <div class="bg-gray-700/40 p-4 rounded-xl border border-gray-700"><p class="text-xs text-gray-400">Meses de Ahorro</p><p id="res-meses" class="text-xl font-bold text-white mt-1">6 Meses</p></div>
+                            <div class="bg-gray-700/40 p-4 rounded-xl border border-gray-700"><p class="text-xs text-gray-400">Cuota Mensual</p><p id="res-cuota" class="text-xl font-bold text-blue-400">$0</p></div>
+                        </div>
+                    </div>
+                    <div class="pt-6 border-t border-gray-700 mt-6"><p class="text-xs text-gray-400">PRESUPUESTO TOTAL ESTIMADO</p><h2 id="res-total" class="text-3xl font-black text-emerald-400 mt-1">$0</h2></div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- MODAL INGRESO -->
+    <div id="modal-ingreso" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center hidden opacity-0 transition-opacity duration-200">
+        <div class="bg-gray-800 border border-gray-700 rounded-xl w-full max-w-md p-6">
+            <h3 class="text-lg font-bold text-white mb-4">Registrar Ingreso</h3>
+            <div class="space-y-4">
+                <input type="text" id="in-fuente" placeholder="Fuente (Ej: Yo, Esposa)" class="w-full bg-gray-700 border border-gray-600 rounded-lg p-2 text-sm text-white">
+                <input type="number" id="in-monto" placeholder="Monto ($)" class="w-full bg-gray-700 border border-gray-600 rounded-lg p-2 text-sm text-white">
+                <input type="date" id="in-fecha" class="w-full bg-gray-700 border border-gray-600 rounded-lg p-2 text-sm text-white">
+                <div class="flex gap-3"><button onclick="closeModal('modal-ingreso')" class="flex-1 bg-gray-700 text-gray-300 py-2 rounded-lg">Cancelar</button><button onclick="guardarIngreso()" class="flex-1 bg-emerald-600 text-white py-2 rounded-lg font-semibold">Guardar</button></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL GASTO -->
+    <div id="modal-gasto" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center hidden opacity-0 transition-opacity duration-200">
+        <div class="bg-gray-800 border border-gray-700 rounded-xl w-full max-w-md p-6">
+            <h3 class="text-lg font-bold text-white mb-4">Registrar Gasto / Deuda</h3>
+            <div class="space-y-4">
+                <input type="text" id="ex-nombre" placeholder="Descripción del Gasto" class="w-full bg-gray-700 border border-gray-600 rounded-lg p-2 text-sm text-white">
+                <div class="grid grid-cols-2 gap-3">
+                    <input type="number" id="ex-monto" placeholder="Monto ($)" class="w-full bg-gray-700 border border-gray-600 rounded-lg p-2 text-sm text-white">
+                    <input type="date" id="ex-fecha" class="w-full bg-gray-700 border border-gray-600 rounded-lg p-2 text-xs text-white">
+                </div>
+                <div class="flex gap-2">
+                    <select id="ex-tipo" class="flex-1 bg-gray-700 border border-gray-600 rounded-lg p-2 text-sm text-white"></select>
+                    <button onclick="agregarNuevaCategoria()" class="bg-gray-700 border border-gray-600 px-3 rounded-lg text-xs font-semibold text-white">+</button>
+                </div>
+                <div class="flex gap-3"><button onclick="closeModal('modal-gasto')" class="flex-1 bg-gray-700 text-gray-300 py-2 rounded-lg">Cancelar</button><button onclick="guardarGasto()" class="flex-1 bg-rose-600 text-white py-2 rounded-lg font-semibold">Guardar</button></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- CONFIGURACIÓN DE TU PROYECTO mi_presupuesto EN SUPABASE ---
+        const SUPABASE_URL = "https://yrltnlwibonssdkbodqr.supabase.co"; 
+        const SUPABASE_ANON_KEY = "sb_publishable_jdnN2yoGpjOEUf5Pd6n8EA_qlFaN0Xo";
+        const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        let ingresosTotales = 0, gastosTotales = 0, chartInstance = null;
+        let reglaPorcentajes = { necesidades: 60, deseos: 30, ahorro: 10 };
+
+        lucide.createIcons();
+        
+        // Inicializar selectores de fecha por defecto con el tiempo actual (Año 2026)
+        const deHoy = new Date();
+        document.getElementById('in-fecha').value = deHoy.toISOString().split('T')[0];
+        document.getElementById('export-mes').value = deHoy.toISOString().substring(0, 7);
+
+        window.onload = async function() {
+            await cargarDatosDesdeSupabase();
+            calcularSimuladorViaje();
+        };
+
+        // --- CONECTIVIDAD SUPABASE (SELECTS) ---
+        async function cargarDatosDesdeSupabase() {
+            const { data: dataIngresos } = await _supabase.from('ingresos').select('*');
+            ingresosTotales = dataIngresos ? dataIngresos.reduce((sum, i) => sum + Number(i.monto), 0) : 0;
+
+            const { data: dataCategorias } = await _supabase.from('tipos_deuda').select('*');
+            const selectTipo = document.getElementById('ex-tipo');
+            selectTipo.innerHTML = dataCategorias ? dataCategorias.map(c => `<option value="${c.id}">${c.nombre}</option>`).join('') : '';
+
+            const { data: dataGastos } = await _supabase.from('gastos_deudas').select('*, tipos_deuda(nombre)');
+            gastosTotales = dataGastos ? dataGastos.reduce((sum, g) => sum + Number(g.monto), 0) : 0;
+
+            const { data: dataRegla } = await _supabase.from('configuracion_regla').select('*').eq('id', 1).single();
+            if (dataRegla) {
+                reglaPorcentajes = { necesidades: dataRegla.necesidades, deseos: dataRegla.deseos, ahorro: dataRegla.ahorro };
+                document.getElementById('pct-necesidades').value = dataRegla.necesidades;
+                document.getElementById('pct-deseos').value = dataRegla.deseos;
+                document.getElementById('pct-ahorro').value = dataRegla.ahorro;
+            }
+
+            renderDashboard();
+            renderTablaGastos(dataGastos || []);
+        }
+
+        // --- CONECTIVIDAD SUPABASE (INSERTS) ---
+        async function guardarIngreso() {
+            const fuente = document.getElementById('in-fuente').value;
+            const monto = parseFloat(document.getElementById('in-monto').value);
+            const fecha = document.getElementById('in-fecha').value;
+
+            if (!fuente || !monto) return alert("Completa los campos.");
+
+            await _supabase.from('ingresos').insert([{ fuente, monto, fecha }]);
+            closeModal('modal-ingreso');
+            await cargarDatosDesdeSupabase();
+        }
+
+        async function guardarGasto() {
+            const nombre = document.getElementById('ex-nombre').value;
+            const monto = parseFloat(document.getElementById('ex-monto').value);
+            const fecha_pago = document.getElementById('ex-fecha').value;
+            const tipo_deuda_id = document.getElementById('ex-tipo').value;
+
+            if (!nombre || !monto || !fecha_pago) return alert("Completa los campos.");
+
+            await _supabase.from('gastos_deudas').insert([{ nombre, monto, fecha_pago, tipo_deuda_id }]);
+            closeModal('modal-gasto');
+            await cargarDatosDesdeSupabase();
+        }
+
+        async function agregarNuevaCategoria() {
+            const nombre = prompt("Nuevo tipo de deuda:");
+            if (!nombre) return;
+            await _supabase.from('tipos_deuda').insert([{ nombre }]);
+            await cargarDatosDesdeSupabase();
+        }
+
+        async function actualizarPorcentajes() {
+            const necesidades = parseInt(document.getElementById('pct-necesidades').value) || 0;
+            const deseos = parseInt(document.getElementById('pct-deseos').value) || 0;
+            const ahorro = parseInt(document.getElementById('pct-ahorro').value) || 0;
+
+            if ((necesidades + deseos + ahorro) !== 100) return alert("Debe sumar 100%");
+
+            await _supabase.from('configuracion_regla').upsert({ id: 1, necesidades, deseos, ahorro });
+            await cargarDatosDesdeSupabase();
+            alert("Regla de porcentajes actualizada.");
+        }
+
+        // --- EXPORTACIÓN DE REPORTE MENSUAL FILTRADO ---
+        async function exportarReporteMensual() {
+            const mesSeleccionado = document.getElementById('export-mes').value;
+            if (!mesSeleccionado) return alert("Por favor, selecciona un mes válido.");
+
+            const [anho, mes] = mesSeleccionado.split('-');
+            const fechaInicio = `${anho}-${mes}-01`;
+            const fechaFin = `${anho}-${mes}-31`; 
+
+            const { data: ingresosMes, error: errIn } = await _supabase
+                .from('ingresos')
+                .select('*')
+                .gte('fecha', fechaInicio)
+                .lte('fecha', fechaFin);
+
+            const { data: gastosMes, error: errGa } = await _supabase
+                .from('gastos_deudas')
+                .select('*, tipos_deuda(nombre)')
+                .gte('fecha_pago', fechaInicio)
+                .lte('fecha_pago', fechaFin);
+
+            if (errIn || errGa) {
+                console.error(errIn || errGa);
+                return alert("Hubo un error al consultar los datos para la exportación.");
+            }
+
+            const totalIn = ingresosMes ? ingresosMes.reduce((sum, i) => sum + Number(i.monto), 0) : 0;
+            const totalGa = gastosMes ? gastosMes.reduce((sum, g) => sum + Number(g.monto), 0) : 0;
+            const balanceNeto = totalIn - totalGa;
+
+            let csvContent = "\uFEFF"; 
+            csvContent += `REPORTE FINANCIERO MENSUAL - PERÍODO: ${mesSeleccionado}\n`;
+            csvContent += `Ingresos Totales del Mes;${totalIn}\n`;
+            csvContent += `Gastos/Deudas Totales del Mes;${totalGa}\n`;
+            csvContent += `Balance Neto;${balanceNeto}\n\n`;
+
+            csvContent += "--- SECCIÓN DE INGRESOS ---\n";
+            csvContent += "Fuente;Monto;Fecha\n";
+            if (ingresosMes && ingresosMes.length > 0) {
+                ingresosMes.forEach(i => { csvContent += `${i.fuente};${i.monto};${i.fecha}\n`; });
+            } else {
+                csvContent += "Sin ingresos registrados en este mes;;\n";
+            }
+            csvContent += "\n";
+
+            csvContent += "--- SECCIÓN DE GASTOS Y DEUDAS ---\n";
+            csvContent += "Descripción;Categoría;Monto;Fecha de Pago\n";
+            if (gastosMes && gastosMes.length > 0) {
+                gastosMes.forEach(g => {
+                    const categoria = g.tipos_deuda?.nombre || 'Sin Categoría';
+                    csvContent += `${g.nombre};${categoria};${g.monto};${g.fecha_pago}\n`;
+                });
+            } else {
+                csvContent += "Sin gastos o deudas registrados en este mes;;;\n";
+            }
+
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement("a");
+            link.setAttribute("href", url);
+            link.setAttribute("download", `Reporte_mi_presupuesto_${mesSeleccionado}.csv`);
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        // --- RENDERS UI ---
+        function formatMoney(amount) { return '$' + amount.toLocaleString('es-CO'); }
+
+        function renderDashboard() {
+            document.getElementById('txt-ingresos').textContent = formatMoney(ingresosTotales);
+            document.getElementById('txt-gastos').textContent = formatMoney(gastosTotales);
+            document.getElementById('txt-balance').textContent = formatMoney(ingresosTotales - gastosTotales);
+
+            const valNec = (ingresosTotales * reglaPorcentajes.necesidades) / 100;
+            const valDes = (ingresosTotales * reglaPorcentajes.deseos) / 100;
+            const valAho = (ingresosTotales * reglaPorcentajes.ahorro) / 100;
+
+            document.getElementById('lista-limites').innerHTML = `
+                <div><span>${reglaPorcentajes.necesidades}% Necesidades:</span> <strong class="text-white">${formatMoney(valNec)} Max</strong></div>
+                <div><span>${reglaPorcentajes.deseos}% Deseos:</span> <strong class="text-white">${formatMoney(valDes)} Max</strong></div>
+                <div><span>${reglaPorcentajes.ahorro}% Ahorro:</span> <strong class="text-white">${formatMoney(valAho)} Mín</strong></div>
+            `;
+
+            const ctx = document.getElementById('chartPresupuesto').getContext('2d');
+            if (chartInstance) chartInstance.destroy();
+            chartInstance = new Chart(ctx, {
+                type: 'doughnut',
+                data: { labels: ['Necesidades', 'Deseos', 'Ahorro'], datasets: [{ data: [valNec, valDes, valAho], backgroundColor: ['#10b981', '#3b82f6', '#a855f7'], borderWidth: 0 }] },
+                options: { plugins: { legend: { display: false } }, cutout: '75%' }
+            });
+        }
+
+        function renderTablaGastos(lista) {
+            const tbody = document.getElementById('tabla-gastos');
+            tbody.innerHTML = lista.length === 0 ? '<tr><td colspan="4" class="p-4 text-center text-gray-500">Sin deudas registradas.</td></tr>' : 
+            lista.map(g => `<tr><td class="p-4 font-medium text-white">${g.nombre}</td><td class="p-4">${g.tipos_deuda?.nombre || 'S/N'}</td><td class="p-4 text-rose-400 font-semibold">${formatMoney(g.monto)}</td><td class="p-4 text-gray-400">${g.fecha_pago}</td></tr>`).join('');
+        }
+
+        function calcularSimuladorViaje() {
+            const destino = document.getElementById('v-destino').value;
+            const inicio = new Date(document.getElementById('v-inicio').value);
+            const fin = new Date(document.getElementById('v-fin').value);
+            const porcentaje = parseFloat(document.getElementById('v-porcentaje').value) || 0;
+
+            let meses = (fin.getFullYear() - inicio.getFullYear()) * 12 + (fin.getMonth() - inicio.getMonth());
+            meses = meses <= 0 ? 1 : meses;
+
+            const cuota = (ingresosTotales * porcentaje) / 100;
+            document.getElementById('res-destino').textContent = destino;
+            document.getElementById('res-meses').textContent = meses + " Meses";
+            document.getElementById('res-cuota').textContent = formatMoney(cuota);
+            document.getElementById('res-total').textContent = formatMoney(cuota * meses);
+        }
+
+        // --- MANEJO DE SIDEBAR Y INTERFAZ MODAL ---
+        document.getElementById('btn-toggle').addEventListener('click', () => {
+            const sb = document.getElementById('sidebar');
+            sb.classList.toggle('w-64'); sb.classList.toggle('w-16');
+            document.querySelectorAll('.sidebar-text').forEach(t => t.classList.toggle('hidden'));
+            document.getElementById('sidebar-title').classList.toggle('hidden');
+        });
+
+        function switchTab(id) {
+            document.querySelectorAll('.content-tab').forEach(t => t.classList.add('hidden'));
+            document.getElementById(id).classList.remove('hidden');
+        }
+
+        function openModal(id) { 
+            const m = document.getElementById(id);
+            m.classList.remove('hidden'); 
+            setTimeout(() => m.classList.remove('opacity-0'), 10);
+        }
+        function closeModal(id) { 
+            const m = document.getElementById(id);
+            m.classList.add('opacity-0'); 
+            setTimeout(() => m.classList.add('hidden'), 200);
+        }
+    </script>
+</body>
+</html>
