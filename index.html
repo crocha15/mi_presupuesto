@@ -420,71 +420,87 @@
             }
         });
 
-        // --- EXPORTACIÓN DE REPORTE MENSUAL FILTRADO ---
+        // --- FUNCIÓN DE EXPORTACIÓN REPARADA PARA EXCEL NATIVO ---
         async function exportarReporteMensual() {
             const mesSeleccionado = document.getElementById('export-mes').value;
             if (!mesSeleccionado) return alert("Por favor, selecciona un mes válido.");
 
             const [anho, mes] = mesSeleccionado.split('-');
             const fechaInicio = `${anho}-${mes}-01`;
-            const fechaFin = `${anho}-${mes}-31`;
+            
+            // Último día dinámico del mes
+            const ultimoDia = new Date(anho, mes, 0).getDate();
+            const fechaFin = `${anho}-${mes}-${ultimoDia}`;
 
-            const { data: ingresosMes, error: errIn } = await _supabase
-                .from('ingresos')
-                .select('*')
-                .gte('fecha', fechaInicio)
-                .lte('fecha', fechaFin);
+            try {
+                // 1. Consultas a Supabase
+                const { data: ingresosMes, error: errIn } = await _supabase
+                    .from('ingresos')
+                    .select('*')
+                    .gte('fecha', fechaInicio)
+                    .lte('fecha', fechaFin);
 
-            const { data: gastosMes, error: errGa } = await _supabase
-                .from('gastos_deudas')
-                .select('*, tipos_deuda(nombre)')
-                .gte('fecha_pago', fechaInicio)
-                .lte('fecha_pago', fechaFin);
+                const { data: gastosMes, error: errGa } = await _supabase
+                    .from('gastos_deudas')
+                    .select('*, tipos_deuda(nombre)')
+                    .gte('fecha_pago', fechaInicio)
+                    .lte('fecha_pago', fechaFin);
 
-            if (errIn || errGa) {
-                console.error(errIn || errGa);
-                return alert("Hubo un error al consultar los datos para la exportación.");
+                if (errIn || errGa) throw (errIn || errGa);
+
+                // 2. Cálculos seguros de totales
+                const totalIn = Array.isArray(ingresosMes) ? ingresosMes.reduce((sum, i) => sum + Number(i.monto || 0), 0) : 0;
+                const totalGa = Array.isArray(gastosMes) ? gastosMes.reduce((sum, g) => sum + Number(g.monto || 0), 0) : 0;
+                const balanceNeto = totalIn - totalGa;
+
+                // 3. CONSTRUCCIÓN CORREGIDA DEL CSV (Instrucción sep pegada al inicio)
+                let csvContent = "\uFEFFsep=;\n"; // <-- FIX: \uFEFF y sep=; van juntos en la primerísima línea
+                csvContent += `REPORTE FINANCIERO MENSUAL - PERÍODO: ${mesSeleccionado}\n`;
+                csvContent += `Ingresos Totales del Mes;${totalIn}\n`;
+                csvContent += `Gastos/Deudas Totales del Mes;${totalGa}\n`;
+                csvContent += `Balance Neto;${balanceNeto}\n\n`;
+
+                // --- SECCIÓN DE INGRESOS ---
+                csvContent += "--- SECCIÓN DE INGRESOS ---\n";
+                csvContent += "Fuente;Monto;Fecha\n";
+                if (Array.isArray(ingresosMes) && ingresosMes.length > 0) {
+                    ingresosMes.forEach(i => {
+                        csvContent += `${i.fuente || 'S/N'};${i.monto || 0};${i.fecha || ''}\n`;
+                    });
+                } else {
+                    csvContent += "Sin ingresos registrados en este mes;;\n";
+                }
+                csvContent += "\n";
+
+                // --- SECCIÓN DE GASTOS Y DEUDAS ---
+                csvContent += "--- SECCIÓN DE GASTOS Y DEUDAS ---\n";
+                csvContent += "Descripción;Categoría;Monto;Fecha de Pago\n";
+                if (Array.isArray(gastosMes) && gastosMes.length > 0) {
+                    gastosMes.forEach(g => {
+                        const categoria = g.tipos_deuda?.nombre || 'Sin Categoría';
+                        csvContent += `${g.nombre || 'S/N'};${categoria};${g.monto || 0};${g.fecha_pago || ''}\n`;
+                    });
+                } else {
+                    csvContent += "Sin gastos o deudas registrados en este mes;;;\n";
+                }
+
+                // 4. Creación del archivo y descarga automática
+                const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement("a");
+                link.setAttribute("href", url);
+                link.setAttribute("download", `Reporte_mi_presupuesto_${mesSeleccionado}.csv`);
+                link.style.visibility = 'hidden';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+
+                console.log("CSV generado y estructurado para Excel con éxito.");
+
+            } catch (error) {
+                console.error("Error al generar el CSV:", error.message);
+                alert("Hubo un error al consultar u organizar los datos para el reporte.");
             }
-
-            const totalIn = ingresosMes ? ingresosMes.reduce((sum, i) => sum + Number(i.monto), 0) : 0;
-            const totalGa = gastosMes ? gastosMes.reduce((sum, g) => sum + Number(g.monto), 0) : 0;
-            const balanceNeto = totalIn - totalGa;
-
-            let csvContent = "\uFEFF";
-            csvContent += `REPORTE FINANCIERO MENSUAL - PERÍODO: ${mesSeleccionado}\n`;
-            csvContent += `Ingresos Totales del Mes;${totalIn}\n`;
-            csvContent += `Gastos/Deudas Totales del Mes;${totalGa}\n`;
-            csvContent += `Balance Neto;${balanceNeto}\n\n`;
-
-            csvContent += "--- SECCIÓN DE INGRESOS ---\n";
-            csvContent += "Fuente;Monto;Fecha\n";
-            if (ingresosMes && ingresosMes.length > 0) {
-                ingresosMes.forEach(i => { csvContent += `${i.fuente};${i.monto};${i.fecha}\n`; });
-            } else {
-                csvContent += "Sin ingresos registrados en este mes;;\n";
-            }
-            csvContent += "\n";
-
-            csvContent += "--- SECCIÓN DE GASTOS Y DEUDAS ---\n";
-            csvContent += "Descripción;Categoría;Monto;Fecha de Pago\n";
-            if (gastosMes && gastosMes.length > 0) {
-                gastosMes.forEach(g => {
-                    const categoria = g.tipos_deuda?.nombre || 'Sin Categoría';
-                    csvContent += `${g.nombre};${categoria};${g.monto};${g.fecha_pago}\n`;
-                });
-            } else {
-                csvContent += "Sin gastos o deudas registrados en este mes;;;\n";
-            }
-
-            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-            const url = URL.createObjectURL(blob);
-            const link = document.createElement("a");
-            link.setAttribute("href", url);
-            link.setAttribute("download", `Reporte_mi_presupuesto_${mesSeleccionado}.csv`);
-            link.style.visibility = 'hidden';
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
         }
 
         // --- RENDERS UI ---
